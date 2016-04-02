@@ -1,20 +1,3 @@
----
-title: "Youth, technology, and social media in East Africa, the Middle East, and Indigenous Canada"
-date: "March 2016."
-output:
-  html_document:
-    theme: cerulean
-    toc: true
-    toc_depth: 4
-  pdf_document: default
----
-
-<!-- For more info on RMarkdown see http://rmarkdown.rstudio.com/ -->
-
-<!-- Enter the code required to load your data in the space below. The data will be loaded but the line of code won't show up in your write up (echo=FALSE) in order to save space-->
-
-
-<!-- In the remainder of the document, add R code chunks as needed -->
 
 ### Introduction:
 
