@@ -24,21 +24,75 @@
 
 bank <- read.csv("bank-full.csv", sep=";")
 
-library(plyr)
-revalue(bank$default, c("no"="0", "yes"="1"))
-revalue(bank$housing, c("no"="0", "yes"="1"))
-revalue(bank$loan, c("no"="0", "yes"="1"))
-revalue(bank$y, c("no"="0", "yes"="1"))
+bank$default = factor(bank$default,levels=c("no","yes"),ordered=TRUE)
+bank$housing = factor(bank$housing,levels=c("no","yes"),ordered=TRUE)
+bank$loan = factor(bank$loan,levels=c("no","yes"),ordered=TRUE)
+bank$y = factor(bank$y,levels=c("no","yes"),ordered=TRUE)
+
+library(rpart)
+library(rpart.plot)
+modelCART = rpart(y~., data=bank, method="class")
+
+rpart.plot(modelCART)
+
+predCART=predict(modelCART, data=bank, type="class")
+table(predCART, bank$y)
+(38904+1845)/nrow(bank)
+# 0.9013072
+
+#instead of splitting the data into 2 parts of train and test, 
+#data is split into 3 parts: ensembleData, blenderData, and testingData:
+  
+set.seed(1234)
+split <- floor(nrow(bank)/3)
+ensembleData <- bank[0:split,]
+blenderData <- bank[(split+1):(split*2),]
+testingData <- bank[(split*2+1):nrow(bank),]
+
+#We assign the outcome name to labelName and the predictor variables to predictors:
+  
+labelName <- 'y'
+predictors <- names(ensembleData)[names(ensembleData) != labelName]
+
+#We create a caret trainControl object to control the number of cross-validations performed (the more the better but for breivity we only require 3):
+library(caret)
+myControl <- trainControl(method='cv', number=3, returnResamp='none')
+
+#We run the data on a gbm model without any enembling to use as a comparative benchmark:
+library(gbm)
+test_model <- train(blenderData[,predictors], blenderData[,labelName], method='gbm', trControl=myControl)
+
+#Now use 3 models - gbm, rpart, and treebag as part of our ensembles of models and train them with the ensembleData data set:
+library(ipred) 
+model_gbm <- train(ensembleData[,predictors], ensembleData[,labelName], method='gbm', trControl=myControl)
+
+model_rpart <- train(ensembleData[,predictors], ensembleData[,labelName], method='rpart', trControl=myControl)
+
+model_treebag <- train(ensembleData[,predictors], ensembleData[,labelName], method='treebag', trControl=myControl)
 
 
-library(randomForest)
-modelRF = randomForest(y~., data=bank, method="class", importance = TRUE)
-varImpPlot(modelRF, type=1, main="Variable importance")
-importance(modelRF)
 
-predRF=predict(modelRF, data=bank, type="class")
-table(predRF, bank$y)
-(38435+2606)/nrow(bank)
-# 0.9077658
+#After our 3 models are trained, we use them to predict 6 cylinder vehicles on the other two data sets: blenderData and testingData - yes, both!! We need to do this to harvest the predictions from both data sets as we’re going to add those predictions as new features to the same data sets. So, as we have 3 models, we’re going to add three new columns to both blenderData and testingData:
+  
+blenderData$gbm_PROB <- predict(object=model_gbm, blenderData[,predictors])
+blenderData$rf_PROB <- predict(object=model_rpart, blenderData[,predictors])
+blenderData$treebag_PROB <- predict(object=model_treebag, blenderData[,predictors])
 
-modelLog = glm 
+testingData$gbm_PROB <- predict(object=model_gbm, testingData[,predictors])
+testingData$rf_PROB <- predict(object=model_rpart, testingData[,predictors])
+testingData$treebag_PROB <- predict(object=model_treebag, testingData[,predictors])
+
+
+#Now we train a final blending model on the old data and the new predictions (we use gbm but that is completely arbitrary):
+  
+predictors <- names(blenderData)[names(blenderData) != labelName]
+final_blender_model <- train(blenderData[,predictors], blenderData[,labelName], method='gbm', trControl=myControl)
+
+#And we call predict and roc/auc functions to see how our blended ensemble model fared:
+  
+preds <- predict(object=final_blender_model, testingData[,predictors])
+auc <- roc(testingData[,labelName], preds)
+print(auc$auc)
+
+
+
