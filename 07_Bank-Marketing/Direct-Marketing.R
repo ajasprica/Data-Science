@@ -21,33 +21,58 @@
 #Output variable (desired target):
 #  17 - y - has the client subscribed a term deposit? (binary: "yes","no")
 
+library(rpart)
+library(rpart.plot)
+library(caret)
+library(gbm)
+library(ipred)
+library(pROC)
 
 bank <- read.csv("bank-full.csv", sep=";")
 
-bank$default = factor(bank$default,levels=c("no","yes"),ordered=TRUE)
-bank$housing = factor(bank$housing,levels=c("no","yes"),ordered=TRUE)
-bank$loan = factor(bank$loan,levels=c("no","yes"),ordered=TRUE)
-bank$y = factor(bank$y,levels=c("no","yes"),ordered=TRUE)
+#AUC require numeric or ordered factor
+bank$y = as.character(bank$y)
+bank$y[bank$y=="no"] <- 0
+bank$y[bank$y=="yes"] <- 1
+bank$y = as.integer(bank$y)
 
-library(rpart)
-library(rpart.plot)
-modelCART = rpart(y~., data=bank, method="class")
+## set the seed to make partition reproductible
+set.seed(123)
+train_ind <- sample(seq_len(nrow(bank)), size = floor(0.75 * nrow(bank)))
 
-rpart.plot(modelCART)
+train <- bank[train_ind, ]
+test <- bank[-train_ind, ]
 
-predCART=predict(modelCART, data=bank, type="class")
-table(predCART, bank$y)
-(38904+1845)/nrow(bank)
-# 0.9013072
+#fast CART test
+CART = rpart(y~., data=train, method="class")
+
+#prediction on train set
+preCARTtr=predict(CART, type="class")
+table(train$y, preCARTtr)
+(29168+1399)/nrow(train)
+# 0.9014687
+
+#prediction on test set
+preCARTte=predict(CART, newdata=test, type="class")
+preCARTte = as.integer(preCARTte)
+table(test$y, preCARTte)
+(9735+447)/nrow(test)
+# 0.9008228
+
+#calculate AUC
+auc <- roc(test$y, preCARTte)
+print(auc.cv$auc) 
+# Area under the curve: 0.7451
 
 #instead of splitting the data into 2 parts of train and test, 
 #data is split into 3 parts: ensembleData, blenderData, and testingData:
   
 set.seed(1234)
-split <- floor(nrow(bank)/3)
-ensembleData <- bank[0:split,]
-blenderData <- bank[(split+1):(split*2),]
-testingData <- bank[(split*2+1):nrow(bank),]
+bank.cv <- bank[sample(nrow(bank)),]
+split <- floor(nrow(bank.cv)/3)
+ensembleData <- bank.cv[0:split,]
+blenderData <- bank.cv[(split+1):(split*2),]
+testingData <- bank.cv[(split*2+1):nrow(bank.cv),]
 
 #We assign the outcome name to labelName and the predictor variables to predictors:
   
@@ -55,22 +80,24 @@ labelName <- 'y'
 predictors <- names(ensembleData)[names(ensembleData) != labelName]
 
 #We create a caret trainControl object to control the number of cross-validations performed (the more the better but for breivity we only require 3):
-library(caret)
+
 myControl <- trainControl(method='cv', number=3, returnResamp='none')
 
 #We run the data on a gbm model without any enembling to use as a comparative benchmark:
-library(gbm)
-test_model <- train(blenderData[,predictors], blenderData[,labelName], method='gbm', trControl=myControl)
+
+modelCART <- train(blenderData[,predictors], blenderData[,labelName], method='rpart', trControl=myControl)
+predCART <- predict(object=modelCART, testingData[,predictors])
+
+#calculate AUC
+auc.cv <- roc(testingData[,labelName], predCART)
+print(auc.cv$auc) 
+#Area under the curve: 0.7451
 
 #Now use 3 models - gbm, rpart, and treebag as part of our ensembles of models and train them with the ensembleData data set:
-library(ipred) 
+
 model_gbm <- train(ensembleData[,predictors], ensembleData[,labelName], method='gbm', trControl=myControl)
-
 model_rpart <- train(ensembleData[,predictors], ensembleData[,labelName], method='rpart', trControl=myControl)
-
 model_treebag <- train(ensembleData[,predictors], ensembleData[,labelName], method='treebag', trControl=myControl)
-
-
 
 #After our 3 models are trained, we use them to predict 6 cylinder vehicles on the other two data sets: blenderData and testingData - yes, both!! We need to do this to harvest the predictions from both data sets as we’re going to add those predictions as new features to the same data sets. So, as we have 3 models, we’re going to add three new columns to both blenderData and testingData:
   
@@ -91,8 +118,14 @@ final_blender_model <- train(blenderData[,predictors], blenderData[,labelName], 
 #And we call predict and roc/auc functions to see how our blended ensemble model fared:
   
 preds <- predict(object=final_blender_model, testingData[,predictors])
-auc <- roc(testingData[,labelName], preds)
-print(auc$auc)
+auc_f <- roc(testingData[,labelName], preds)
+print(auc_f$auc)
+#Area under the curve: 0.922
 
+table(testingData$y,preds>0.5)
+(12852+747)/nrow(testingData)
+#0.902329
 
-
+### CONCLUSION: Ensembles model have AUC of 0.922 and accuracy 90,23%,
+### while CV and non-CV AUC of 0.7451 and accuracy 90,14%, but
+### Ensemble have superior classification performance.
