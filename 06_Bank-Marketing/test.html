@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="author" content="Vignette Author" />
+
+<meta name="date" content="2016-04-23" />
+
+<title>Vignette Title</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+<link href="data:text/css,body%20%7B%0A%20%20background%2Dcolor%3A%20%23fff%3B%0A%20%20margin%3A%201em%20auto%3B%0A%20%20max%2Dwidth%3A%20700px%3B%0A%20%20overflow%3A%20visible%3B%0A%20%20padding%2Dleft%3A%202em%3B%0A%20%20padding%2Dright%3A%202em%3B%0A%20%20font%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0A%20%20font%2Dsize%3A%2014px%3B%0A%20%20line%2Dheight%3A%201%2E35%3B%0A%7D%0A%0A%23header%20%7B%0A%20%20text%2Dalign%3A%20center%3B%0A%7D%0A%0A%23TOC%20%7B%0A%20%20clear%3A%20both%3B%0A%20%20margin%3A%200%200%2010px%2010px%3B%0A%20%20padding%3A%204px%3B%0A%20%20width%3A%20400px%3B%0A%20%20border%3A%201px%20solid%20%23CCCCCC%3B%0A%20%20border%2Dradius%3A%205px%3B%0A%0A%20%20background%2Dcolor%3A%20%23f6f6f6%3B%0A%20%20font%2Dsize%3A%2013px%3B%0A%20%20line%2Dheight%3A%201%2E3%3B%0A%7D%0A%20%20%23TOC%20%2Etoctitle%20%7B%0A%20%20%20%20font%2Dweight%3A%20bold%3B%0A%20%20%20%20font%2Dsize%3A%2015px%3B%0A%20%20%20%20margin%2Dleft%3A%205px%3B%0A%20%20%7D%0A%0A%20%20%23TOC%20ul%20%7B%0A%20%20%20%20padding%2Dleft%3A%2040px%3B%0A%20%20%20%20margin%2Dleft%3A%20%2D1%2E5em%3B%0A%20%20%20%20margin%2Dtop%3A%205px%3B%0A%20%20%20%20margin%2Dbottom%3A%205px%3B%0A%20%20%7D%0A%20%20%23TOC%20ul%20ul%20%7B%0A%20%20%20%20margin%2Dleft%3A%20%2D2em%3B%0A%20%20%7D%0A%20%20%23TOC%20li%20%7B%0A%20%20%20%20line%2Dheight%3A%2016px%3B%0A%20%20%7D%0A%0Atable%20%7B%0A%20%20margin%3A%201em%20auto%3B%0A%20%20border%2Dwidth%3A%201px%3B%0A%20%20border%2Dcolor%3A%20%23DDDDDD%3B%0A%20%20border%2Dstyle%3A%20outset%3B%0A%20%20border%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0A%20%20border%2Dwidth%3A%202px%3B%0A%20%20padding%3A%205px%3B%0A%20%20border%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0A%20%20border%2Dwidth%3A%201px%3B%0A%20%20border%2Dstyle%3A%20inset%3B%0A%20%20line%2Dheight%3A%2018px%3B%0A%20%20padding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0A%20%20border%2Dleft%2Dstyle%3A%20none%3B%0A%20%20border%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0A%20%20background%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0A%0Ap%20%7B%0A%20%20margin%3A%200%2E5em%200%3B%0A%7D%0A%0Ablockquote%20%7B%0A%20%20background%2Dcolor%3A%20%23f6f6f6%3B%0A%20%20padding%3A%200%2E25em%200%2E75em%3B%0A%7D%0A%0Ahr%20%7B%0A%20%20border%2Dstyle%3A%20solid%3B%0A%20%20border%3A%20none%3B%0A%20%20border%2Dtop%3A%201px%20solid%20%23777%3B%0A%20%20margin%3A%2028px%200%3B%0A%7D%0A%0Adl%20%7B%0A%20%20margin%2Dleft%3A%200%3B%0A%7D%0A%20%20dl%20dd%20%7B%0A%20%20%20%20margin%2Dbottom%3A%2013px%3B%0A%20%20%20%20margin%2Dleft%3A%2013px%3B%0A%20%20%7D%0A%20%20dl%20dt%20%7B%0A%20%20%20%20font%2Dweight%3A%20bold%3B%0A%20%20%7D%0A%0Aul%20%7B%0A%20%20margin%2Dtop%3A%200%3B%0A%7D%0A%20%20ul%20li%20%7B%0A%20%20%20%20list%2Dstyle%3A%20circle%20outside%3B%0A%20%20%7D%0A%20%20ul%20ul%20%7B%0A%20%20%20%20margin%2Dbottom%3A%200%3B%0A%20%20%7D%0A%0Apre%2C%20code%20%7B%0A%20%20background%2Dcolor%3A%20%23f7f7f7%3B%0A%20%20border%2Dradius%3A%203px%3B%0A%20%20color%3A%20%23333%3B%0A%7D%0Apre%20%7B%0A%20%20white%2Dspace%3A%20pre%2Dwrap%3B%20%20%20%20%2F%2A%20Wrap%20long%20lines%20%2A%2F%0A%20%20border%2Dradius%3A%203px%3B%0A%20%20margin%3A%205px%200px%2010px%200px%3B%0A%20%20padding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0A%20%20background%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0A%0Acode%20%7B%0A%20%20font%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0A%20%20font%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0A%20%20padding%3A%202px%200px%3B%0A%7D%0A%0Adiv%2Efigure%20%7B%0A%20%20text%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0A%20%20background%2Dcolor%3A%20%23FFFFFF%3B%0A%20%20padding%3A%202px%3B%0A%20%20border%3A%201px%20solid%20%23DDDDDD%3B%0A%20%20border%2Dradius%3A%203px%3B%0A%20%20border%3A%201px%20solid%20%23CCCCCC%3B%0A%20%20margin%3A%200%205px%3B%0A%7D%0A%0Ah1%20%7B%0A%20%20margin%2Dtop%3A%200%3B%0A%20%20font%2Dsize%3A%2035px%3B%0A%20%20line%2Dheight%3A%2040px%3B%0A%7D%0A%0Ah2%20%7B%0A%20%20border%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0A%20%20padding%2Dtop%3A%2010px%3B%0A%20%20padding%2Dbottom%3A%202px%3B%0A%20%20font%2Dsize%3A%20145%25%3B%0A%7D%0A%0Ah3%20%7B%0A%20%20border%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0A%20%20padding%2Dtop%3A%2010px%3B%0A%20%20font%2Dsize%3A%20120%25%3B%0A%7D%0A%0Ah4%20%7B%0A%20%20border%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0A%20%20margin%2Dleft%3A%208px%3B%0A%20%20font%2Dsize%3A%20105%25%3B%0A%7D%0A%0Ah5%2C%20h6%20%7B%0A%20%20border%2Dbottom%3A%201px%20solid%20%23ccc%3B%0A%20%20font%2Dsize%3A%20105%25%3B%0A%7D%0A%0Aa%20%7B%0A%20%20color%3A%20%230033dd%3B%0A%20%20text%2Ddecoration%3A%20none%3B%0A%7D%0A%20%20a%3Ahover%20%7B%0A%20%20%20%20color%3A%20%236666ff%3B%20%7D%0A%20%20a%3Avisited%20%7B%0A%20%20%20%20color%3A%20%23800080%3B%20%7D%0A%20%20a%3Avisited%3Ahover%20%7B%0A%20%20%20%20color%3A%20%23BB00BB%3B%20%7D%0A%20%20a%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0A%20%20%20%20text%2Ddecoration%3A%20underline%3B%20%7D%0A%20%20a%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0A%20%20%20%20text%2Ddecoration%3A%20underline%3B%20%7D%0A%0A%2F%2A%20Class%20described%20in%20https%3A%2F%2Fbenjeffrey%2Ecom%2Fposts%2Fpandoc%2Dsyntax%2Dhighlighting%2Dcss%0A%20%20%20Colours%20from%20https%3A%2F%2Fgist%2Egithub%2Ecom%2Frobsimmons%2F1172277%20%2A%2F%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%2F%2A%20Keyword%20%2A%2F%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%2F%2A%20DataType%20%2A%2F%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%2F%2A%20DecVal%20%28decimal%20values%29%20%2A%2F%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20BaseN%20%2A%2F%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20Float%20%2A%2F%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20Char%20%2A%2F%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20String%20%2A%2F%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%2F%2A%20Comment%20%2A%2F%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%2F%2A%20OtherToken%20%2A%2F%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%2F%2A%20AlertToken%20%2A%2F%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%2F%2A%20Function%20calls%20%2A%2F%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%2F%2A%20ErrorTok%20%2A%2F%0A%0A" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+<div id="header">
+<h1 class="title">Vignette Title</h1>
+<h4 class="author"><em>Vignette Author</em></h4>
+<h4 class="date"><em>2016-04-23</em></h4>
+</div>
+
+
+<p>Vignettes are long form documentation commonly included in packages. Because they are part of the distribution of the package, they need to be as compact as possible. The <code>html_vignette</code> output type provides a custom style sheet (and tweaks some options) to ensure that the resulting html is as small as possible. The <code>html_vignette</code> format:</p>
+<ul>
+<li>Never uses retina figures</li>
+<li>Has a smaller default figure size</li>
+<li>Uses a custom CSS stylesheet instead of the default Twitter Bootstrap style</li>
+</ul>
+<div id="vignette-info" class="section level2">
+<h2>Vignette Info</h2>
+<p>Note the various macros within the <code>vignette</code> section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the <code>title</code> field and the <code>\VignetteIndexEntry</code> to match the title of your vignette.</p>
+</div>
+<div id="styles" class="section level2">
+<h2>Styles</h2>
+<p>The <code>html_vignette</code> template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:</p>
+<pre><code>output: 
+  rmarkdown::html_vignette:
+    css: mystyles.css</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(rpart)
+bank &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;bank-full.csv&quot;</span>, <span class="dt">sep=</span><span class="st">&quot;;&quot;</span>)
+
+## set the seed to make partition reproductible
+<span class="kw">set.seed</span>(<span class="dv">123</span>)
+train_ind &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="kw">seq_len</span>(<span class="kw">nrow</span>(bank)), <span class="dt">size =</span> <span class="kw">floor</span>(<span class="fl">0.75</span> *<span class="st"> </span><span class="kw">nrow</span>(bank)))
+train &lt;-<span class="st"> </span>bank[train_ind, ]
+test &lt;-<span class="st"> </span>bank[-train_ind, ]
+
+<span class="co">#CART tree</span>
+CART =<span class="st"> </span><span class="kw">rpart</span>(y~., <span class="dt">data=</span>train, <span class="dt">method=</span><span class="st">&quot;class&quot;</span>)
+
+<span class="co">#prediction on train set</span>
+preCARTtr=<span class="kw">predict</span>(CART, <span class="dt">type=</span><span class="st">&quot;class&quot;</span>)
+<span class="co">#table(train$y, preCARTtr)</span>
+(<span class="dv">29168+1399</span>)/<span class="kw">nrow</span>(train)</code></pre>
+<pre><code>## [1] 0.9014687</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 0.9014687</span>
+
+<span class="co">#prediction on test set</span>
+preCARTte=<span class="kw">predict</span>(CART, <span class="dt">newdata=</span>test, <span class="dt">type=</span><span class="st">&quot;class&quot;</span>)
+preCARTte =<span class="st"> </span><span class="kw">as.integer</span>(preCARTte)
+<span class="co">#table(test$y, preCARTte)</span>
+(<span class="dv">9735+447</span>)/<span class="kw">nrow</span>(test)</code></pre>
+<pre><code>## [1] 0.9008228</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 0.9008228</span></code></pre>
+</div>
+<div id="figures" class="section level2">
+<h2>Figures</h2>
+<p>The figure sizes have been customised so that you can easily put two images side-by-side.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(<span class="dv">1</span>:<span class="dv">10</span>)
+<span class="kw">plot</span>(<span class="dv">10</span>:<span class="dv">1</span>)</code></pre>
+<p><img src="data:image/png;base64,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" /> <img src="data:image/png;base64,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" /></p>
+<p>You can enable figure captions by <code>fig_caption: yes</code> in YAML:</p>
+<pre><code>output:
+  rmarkdown::html_vignette:
+    fig_caption: yes</code></pre>
+<p>Then you can use the chunk option <code>fig.cap = &quot;Your figure caption.&quot;</code> in <strong>knitr</strong>.</p>
+</div>
+<div id="more-examples" class="section level2">
+<h2>More Examples</h2>
+<p>You can write math expressions, e.g. <span class="math">\(Y = X\beta + \epsilon\)</span>, footnotes<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>, and tables, e.g. using <code>knitr::kable()</code>.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="right">x1</th>
+<th align="right">x2</th>
+<th align="right">x3</th>
+<th align="right">x4</th>
+<th align="right">y1</th>
+<th align="right">y2</th>
+<th align="right">y3</th>
+<th align="right">y4</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">10</td>
+<td align="right">10</td>
+<td align="right">10</td>
+<td align="right">8</td>
+<td align="right">8.04</td>
+<td align="right">9.14</td>
+<td align="right">7.46</td>
+<td align="right">6.58</td>
+</tr>
+<tr class="even">
+<td align="right">8</td>
+<td align="right">8</td>
+<td align="right">8</td>
+<td align="right">8</td>
+<td align="right">6.95</td>
+<td align="right">8.14</td>
+<td align="right">6.77</td>
+<td align="right">5.76</td>
+</tr>
+<tr class="odd">
+<td align="right">13</td>
+<td align="right">13</td>
+<td align="right">13</td>
+<td align="right">8</td>
+<td align="right">7.58</td>
+<td align="right">8.74</td>
+<td align="right">12.74</td>
+<td align="right">7.71</td>
+</tr>
+<tr class="even">
+<td align="right">9</td>
+<td align="right">9</td>
+<td align="right">9</td>
+<td align="right">8</td>
+<td align="right">8.81</td>
+<td align="right">8.77</td>
+<td align="right">7.11</td>
+<td align="right">8.84</td>
+</tr>
+<tr class="odd">
+<td align="right">11</td>
+<td align="right">11</td>
+<td align="right">11</td>
+<td align="right">8</td>
+<td align="right">8.33</td>
+<td align="right">9.26</td>
+<td align="right">7.81</td>
+<td align="right">8.47</td>
+</tr>
+<tr class="even">
+<td align="right">14</td>
+<td align="right">14</td>
+<td align="right">14</td>
+<td align="right">8</td>
+<td align="right">9.96</td>
+<td align="right">8.10</td>
+<td align="right">8.84</td>
+<td align="right">7.04</td>
+</tr>
+<tr class="odd">
+<td align="right">6</td>
+<td align="right">6</td>
+<td align="right">6</td>
+<td align="right">8</td>
+<td align="right">7.24</td>
+<td align="right">6.13</td>
+<td align="right">6.08</td>
+<td align="right">5.25</td>
+</tr>
+<tr class="even">
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="right">19</td>
+<td align="right">4.26</td>
+<td align="right">3.10</td>
+<td align="right">5.39</td>
+<td align="right">12.50</td>
+</tr>
+<tr class="odd">
+<td align="right">12</td>
+<td align="right">12</td>
+<td align="right">12</td>
+<td align="right">8</td>
+<td align="right">10.84</td>
+<td align="right">9.13</td>
+<td align="right">8.15</td>
+<td align="right">5.56</td>
+</tr>
+<tr class="even">
+<td align="right">7</td>
+<td align="right">7</td>
+<td align="right">7</td>
+<td align="right">8</td>
+<td align="right">4.82</td>
+<td align="right">7.26</td>
+<td align="right">6.42</td>
+<td align="right">7.91</td>
+</tr>
+<tr class="odd">
+<td align="right">5</td>
+<td align="right">5</td>
+<td align="right">5</td>
+<td align="right">8</td>
+<td align="right">5.68</td>
+<td align="right">4.74</td>
+<td align="right">5.73</td>
+<td align="right">6.89</td>
+</tr>
+</tbody>
+</table>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co">#naredba spaja varijable u jedan stupac</span>
+df =<span class="st"> </span><span class="kw">data.frame</span>(
+                <span class="dt">xVal=</span><span class="kw">c</span>(anscombe$x1,anscombe$x2,anscombe$x3,anscombe$x4),
+                <span class="dt">yVal=</span><span class="kw">c</span>(anscombe$y1,anscombe$y2,anscombe$y3,anscombe$y4), 
+                <span class="dt">mygroup=</span><span class="kw">gl</span>(<span class="dv">4</span>,<span class="kw">nrow</span>(anscombe))
+                )
+
+<span class="co">#specijalna funkcija za sumiranje po grupama</span>
+<span class="kw">library</span>(dplyr)</code></pre>
+<pre><code>## 
+## Attaching package: 'dplyr'
+## 
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+## 
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">df %&gt;%
+<span class="st">  </span><span class="kw">group_by</span>(mygroup) %&gt;%
+<span class="st">  </span><span class="kw">summarize</span>(<span class="kw">mean</span>(xVal), <span class="kw">sd</span>(yVal), <span class="kw">mean</span>(yVal), <span class="kw">sd</span>(yVal), <span class="kw">cor</span>(xVal,yVal))</code></pre>
+<pre><code>## Source: local data frame [4 x 5]
+## 
+##   mygroup mean(xVal) sd(yVal) mean(yVal) cor(xVal, yVal)
+## 1       1          9 2.031568   7.500909       0.8164205
+## 2       2          9 2.031657   7.500909       0.8162365
+## 3       3          9 2.030424   7.500000       0.8162867
+## 4       4          9 2.030579   7.500909       0.8165214</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co">#napredna vizualizacija</span>
+<span class="kw">library</span>(ggplot2)
+p =<span class="st"> </span><span class="kw">ggplot</span>(df, <span class="kw">aes</span>(xVal, yVal)) +<span class="st"> </span><span class="kw">geom_point</span>()
+p =<span class="st"> </span>p +<span class="st"> </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> lm, <span class="dt">se =</span> <span class="ot">FALSE</span>) +<span class="st"> </span><span class="kw">facet_wrap</span>(~mygroup)
+p</code></pre>
+<p><img src="data:image/png;base64,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" /></p>
+<table>
+<thead>
+<tr class="header">
+<th align="right">age</th>
+<th align="left">job</th>
+<th align="left">marital</th>
+<th align="left">education</th>
+<th align="left">default</th>
+<th align="right">balance</th>
+<th align="left">housing</th>
+<th align="left">loan</th>
+<th align="left">contact</th>
+<th align="right">day</th>
+<th align="left">month</th>
+<th align="right">duration</th>
+<th align="right">campaign</th>
+<th align="right">pdays</th>
+<th align="right">previous</th>
+<th align="left">poutcome</th>
+<th align="left">y</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">58</td>
+<td align="left">management</td>
+<td align="left">married</td>
+<td align="left">tertiary</td>
+<td align="left">no</td>
+<td align="right">2143</td>
+<td align="left">yes</td>
+<td align="left">no</td>
+<td align="left">unknown</td>
+<td align="right">5</td>
+<td align="left">may</td>
+<td align="right">261</td>
+<td align="right">1</td>
+<td align="right">-1</td>
+<td align="right">0</td>
+<td align="left">unknown</td>
+<td align="left">no</td>
+</tr>
+<tr class="even">
+<td align="right">44</td>
+<td align="left">technician</td>
+<td align="left">single</td>
+<td align="left">secondary</td>
+<td align="left">no</td>
+<td align="right">29</td>
+<td align="left">yes</td>
+<td align="left">no</td>
+<td align="left">unknown</td>
+<td align="right">5</td>
+<td align="left">may</td>
+<td align="right">151</td>
+<td align="right">1</td>
+<td align="right">-1</td>
+<td align="right">0</td>
+<td align="left">unknown</td>
+<td align="left">no</td>
+</tr>
+<tr class="odd">
+<td align="right">33</td>
+<td align="left">entrepreneur</td>
+<td align="left">married</td>
+<td align="left">secondary</td>
+<td align="left">no</td>
+<td align="right">2</td>
+<td align="left">yes</td>
+<td align="left">yes</td>
+<td align="left">unknown</td>
+<td align="right">5</td>
+<td align="left">may</td>
+<td align="right">76</td>
+<td align="right">1</td>
+<td align="right">-1</td>
+<td align="right">0</td>
+<td align="left">unknown</td>
+<td align="left">no</td>
+</tr>
+<tr class="even">
+<td align="right">47</td>
+<td align="left">blue-collar</td>
+<td align="left">married</td>
+<td align="left">unknown</td>
+<td align="left">no</td>
+<td align="right">1506</td>
+<td align="left">yes</td>
+<td align="left">no</td>
+<td align="left">unknown</td>
+<td align="right">5</td>
+<td align="left">may</td>
+<td align="right">92</td>
+<td align="right">1</td>
+<td align="right">-1</td>
+<td align="right">0</td>
+<td align="left">unknown</td>
+<td align="left">no</td>
+</tr>
+<tr class="odd">
+<td align="right">33</td>
+<td align="left">unknown</td>
+<td align="left">single</td>
+<td align="left">unknown</td>
+<td align="left">no</td>
+<td align="right">1</td>
+<td align="left">no</td>
+<td align="left">no</td>
+<td align="left">unknown</td>
+<td align="right">5</td>
+<td align="left">may</td>
+<td align="right">198</td>
+<td align="right">1</td>
+<td align="right">-1</td>
+<td align="right">0</td>
+<td align="left">unknown</td>
+<td align="left">no</td>
+</tr>
+<tr class="even">
+<td align="right">35</td>
+<td align="left">management</td>
+<td align="left">married</td>
+<td align="left">tertiary</td>
+<td align="left">no</td>
+<td align="right">231</td>
+<td align="left">yes</td>
+<td align="left">no</td>
+<td align="left">unknown</td>
+<td align="right">5</td>
+<td align="left">may</td>
+<td align="right">139</td>
+<td align="right">1</td>
+<td align="right">-1</td>
+<td align="right">0</td>
+<td align="left">unknown</td>
+<td align="left">no</td>
+</tr>
+<tr class="odd">
+<td align="right">28</td>
+<td align="left">management</td>
+<td align="left">single</td>
+<td align="left">tertiary</td>
+<td align="left">no</td>
+<td align="right">447</td>
+<td align="left">yes</td>
+<td align="left">yes</td>
+<td align="left">unknown</td>
+<td align="right">5</td>
+<td align="left">may</td>
+<td align="right">217</td>
+<td align="right">1</td>
+<td align="right">-1</td>
+<td align="right">0</td>
+<td align="left">unknown</td>
+<td align="left">no</td>
+</tr>
+<tr class="even">
+<td align="right">42</td>
+<td align="left">entrepreneur</td>
+<td align="left">divorced</td>
+<td align="left">tertiary</td>
+<td align="left">yes</td>
+<td align="right">2</td>
+<td align="left">yes</td>
+<td align="left">no</td>
+<td align="left">unknown</td>
+<td align="right">5</td>
+<td align="left">may</td>
+<td align="right">380</td>
+<td align="right">1</td>
+<td align="right">-1</td>
+<td align="right">0</td>
+<td align="left">unknown</td>
+<td align="left">no</td>
+</tr>
+<tr class="odd">
+<td align="right">58</td>
+<td align="left">retired</td>
+<td align="left">married</td>
+<td align="left">primary</td>
+<td align="left">no</td>
+<td align="right">121</td>
+<td align="left">yes</td>
+<td align="left">no</td>
+<td align="left">unknown</td>
+<td align="right">5</td>
+<td align="left">may</td>
+<td align="right">50</td>
+<td align="right">1</td>
+<td align="right">-1</td>
+<td align="right">0</td>
+<td align="left">unknown</td>
+<td align="left">no</td>
+</tr>
+<tr class="even">
+<td align="right">43</td>
+<td align="left">technician</td>
+<td align="left">single</td>
+<td align="left">secondary</td>
+<td align="left">no</td>
+<td align="right">593</td>
+<td align="left">yes</td>
+<td align="left">no</td>
+<td align="left">unknown</td>
+<td align="right">5</td>
+<td align="left">may</td>
+<td align="right">55</td>
+<td align="right">1</td>
+<td align="right">-1</td>
+<td align="right">0</td>
+<td align="left">unknown</td>
+<td align="left">no</td>
+</tr>
+<tr class="odd">
+<td align="right">41</td>
+<td align="left">admin.</td>
+<td align="left">divorced</td>
+<td align="left">secondary</td>
+<td align="left">no</td>
+<td align="right">270</td>
+<td align="left">yes</td>
+<td align="left">no</td>
+<td align="left">unknown</td>
+<td align="right">5</td>
+<td align="left">may</td>
+<td align="right">222</td>
+<td align="right">1</td>
+<td align="right">-1</td>
+<td align="right">0</td>
+<td align="left">unknown</td>
+<td align="left">no</td>
+</tr>
+<tr class="even">
+<td align="right">29</td>
+<td align="left">admin.</td>
+<td align="left">single</td>
+<td align="left">secondary</td>
+<td align="left">no</td>
+<td align="right">390</td>
+<td align="left">yes</td>
+<td align="left">no</td>
+<td align="left">unknown</td>
+<td align="right">5</td>
+<td align="left">may</td>
+<td align="right">137</td>
+<td align="right">1</td>
+<td align="right">-1</td>
+<td align="right">0</td>
+<td align="left">unknown</td>
+<td align="left">no</td>
+</tr>
+<tr class="odd">
+<td align="right">53</td>
+<td align="left">technician</td>
+<td align="left">married</td>
+<td align="left">secondary</td>
+<td align="left">no</td>
+<td align="right">6</td>
+<td align="left">yes</td>
+<td align="left">no</td>
+<td align="left">unknown</td>
+<td align="right">5</td>
+<td align="left">may</td>
+<td align="right">517</td>
+<td align="right">1</td>
+<td align="right">-1</td>
+<td align="right">0</td>
+<td align="left">unknown</td>
+<td align="left">no</td>
+</tr>
+<tr class="even">
+<td align="right">58</td>
+<td align="left">technician</td>
+<td align="left">married</td>
+<td align="left">unknown</td>
+<td align="left">no</td>
+<td align="right">71</td>
+<td align="left">yes</td>
+<td align="left">no</td>
+<td align="left">unknown</td>
+<td align="right">5</td>
+<td align="left">may</td>
+<td align="right">71</td>
+<td align="right">1</td>
+<td align="right">-1</td>
+<td align="right">0</td>
+<td align="left">unknown</td>
+<td align="left">no</td>
+</tr>
+<tr class="odd">
+<td align="right">57</td>
+<td align="left">services</td>
+<td align="left">married</td>
+<td align="left">secondary</td>
+<td align="left">no</td>
+<td align="right">162</td>
+<td align="left">yes</td>
+<td align="left">no</td>
+<td align="left">unknown</td>
+<td align="right">5</td>
+<td align="left">may</td>
+<td align="right">174</td>
+<td align="right">1</td>
+<td align="right">-1</td>
+<td align="right">0</td>
+<td align="left">unknown</td>
+<td align="left">no</td>
+</tr>
+<tr class="even">
+<td align="right">51</td>
+<td align="left">retired</td>
+<td align="left">married</td>
+<td align="left">primary</td>
+<td align="left">no</td>
+<td align="right">229</td>
+<td align="left">yes</td>
+<td align="left">no</td>
+<td align="left">unknown</td>
+<td align="right">5</td>
+<td align="left">may</td>
+<td align="right">353</td>
+<td align="right">1</td>
+<td align="right">-1</td>
+<td align="right">0</td>
+<td align="left">unknown</td>
+<td align="left">no</td>
+</tr>
+<tr class="odd">
+<td align="right">45</td>
+<td align="left">admin.</td>
+<td align="left">single</td>
+<td align="left">unknown</td>
+<td align="left">no</td>
+<td align="right">13</td>
+<td align="left">yes</td>
+<td align="left">no</td>
+<td align="left">unknown</td>
+<td align="right">5</td>
+<td align="left">may</td>
+<td align="right">98</td>
+<td align="right">1</td>
+<td align="right">-1</td>
+<td align="right">0</td>
+<td align="left">unknown</td>
+<td align="left">no</td>
+</tr>
+<tr class="even">
+<td align="right">57</td>
+<td align="left">blue-collar</td>
+<td align="left">married</td>
+<td align="left">primary</td>
+<td align="left">no</td>
+<td align="right">52</td>
+<td align="left">yes</td>
+<td align="left">no</td>
+<td align="left">unknown</td>
+<td align="right">5</td>
+<td align="left">may</td>
+<td align="right">38</td>
+<td align="right">1</td>
+<td align="right">-1</td>
+<td align="right">0</td>
+<td align="left">unknown</td>
+<td align="left">no</td>
+</tr>
+<tr class="odd">
+<td align="right">60</td>
+<td align="left">retired</td>
+<td align="left">married</td>
+<td align="left">primary</td>
+<td align="left">no</td>
+<td align="right">60</td>
+<td align="left">yes</td>
+<td align="left">no</td>
+<td align="left">unknown</td>
+<td align="right">5</td>
+<td align="left">may</td>
+<td align="right">219</td>
+<td align="right">1</td>
+<td align="right">-1</td>
+<td align="right">0</td>
+<td align="left">unknown</td>
+<td align="left">no</td>
+</tr>
+<tr class="even">
+<td align="right">33</td>
+<td align="left">services</td>
+<td align="left">married</td>
+<td align="left">secondary</td>
+<td align="left">no</td>
+<td align="right">0</td>
+<td align="left">yes</td>
+<td align="left">no</td>
+<td align="left">unknown</td>
+<td align="right">5</td>
+<td align="left">may</td>
+<td align="right">54</td>
+<td align="right">1</td>
+<td align="right">-1</td>
+<td align="right">0</td>
+<td align="left">unknown</td>
+<td align="left">no</td>
+</tr>
+</tbody>
+</table>
+<p>Also a quote using <code>&gt;</code>:</p>
+<blockquote>
+<p>“He who gives up [code] safety for [code] speed deserves neither.” (<a href="https://twitter.com/hadleywickham/status/504368538874703872">via</a>)</p>
+</blockquote>
+</div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>A footnote here.<a href="#fnref1">↩</a></p></li>
+</ol>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
