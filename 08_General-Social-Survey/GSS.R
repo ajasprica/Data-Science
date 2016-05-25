@@ -3,8 +3,6 @@
 #### Codebook: 
 #### https://d396qusza40orc.cloudfront.net/statistics%2Fproject%2Fgss1.html
 
-# load inference script https://stat.duke.edu/~mc301/R/inference.RData
-load("inference.RData")
 
 # load dataset from web
 load(url("http://bit.ly/dasi_gss_data"))
